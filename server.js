@@ -27,7 +27,7 @@ methods: ['GET', 'POST']
 });
 
 //El puerto escuchara puerto 3000
-server.listen(3000, () => {
+server.listen(process.env.PORT|3000, () => {
 console.log('Servidor funcionando en el puerto 3000');
 });
 
@@ -39,5 +39,8 @@ io.on('connection', (socket) => {
     //Detectamos cunado un jugador pierde la conexion
     socket.on('disconnect', () => {
         console.log('Jugador desconectado:', socket.id);
+
+        //Avisamos a todos los clientes de quien se ha desconectado
+        io.emit('jugadorDesconectado', socket.id);
     });
 })
