@@ -1,2 +1,5 @@
 node_modules/
 .env
+
+# Importació a Taiga: script, històries i credencials són locals de l'equip
+taiga/

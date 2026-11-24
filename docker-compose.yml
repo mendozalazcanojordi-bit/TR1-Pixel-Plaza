@@ -1,0 +1,85 @@
+# Entorn de desenvolupament de CasinoPlaza (HUG-02).
+#
+#   1. Copia .env.example a .env (només el primer cop).
+#   2. docker compose up
+#
+# Servidor:  http://localhost:3000   (Node + Socket.IO, es reinicia sol quan canvia el codi)
+# Client:    http://localhost:5173   (Vite, recàrrega en calent)
+# Adminer:   http://localhost:8080   (per mirar la base de dades: servidor «db»)
+# MySQL:     localhost:3307          (des de l'ordinador; entre contenidors és db:3306)
+#
+# El codi no es copia a les imatges: es munta des de l'ordinador, i les dependències
+# (node_modules) viuen en volums propis de cada contenidor.
+
+name: casinoplaza
+
+services:
+  server:
+    build:
+      context: ./docker
+      dockerfile: server.dev.Dockerfile
+    ports:
+      - "${SERVER_PORT:-3000}:3000"
+    environment:
+      PORT: 3000
+      CLIENT_ORIGIN: http://localhost:${CLIENT_PORT:-5173}
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:?Falta .env (copia .env.example a .env)}
+      DB_USER: ${MYSQL_USER:?Falta .env (copia .env.example a .env)}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?Falta .env (copia .env.example a .env)}
+    volumes:
+      - ./:/app
+      - server_node_modules:/app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+
+  client:
+    build:
+      context: ./docker
+      dockerfile: client.dev.Dockerfile
+    ports:
+      - "${CLIENT_PORT:-5173}:5173"
+    environment:
+      # URL del servidor tal com la veu el navegador (no el contenidor)
+      VITE_SERVER_URL: http://localhost:${SERVER_PORT:-3000}
+    volumes:
+      - ./client:/app
+      - client_node_modules:/app/node_modules
+    depends_on:
+      - server
+
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Falta .env (copia .env.example a .env)}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?Falta .env (copia .env.example a .env)}
+      MYSQL_USER: ${MYSQL_USER:?Falta .env (copia .env.example a .env)}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Falta .env (copia .env.example a .env)}
+    ports:
+      - "${DB_PORT:-3307}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Els .sql d'aquesta carpeta s'executen només el primer cop, amb el volum buit (JOR-02)
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  adminer:
+    image: adminer:4.8.1
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    depends_on:
+      - db
+
+volumes:
+  server_node_modules:
+  client_node_modules:
+  db_data:
