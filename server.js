@@ -26,9 +26,11 @@ methods: ['GET', 'POST']
 }
 });
 
-//El puerto escuchara puerto 3000
-server.listen(process.env.PORT|3000, () => {
-console.log('Servidor funcionando en el puerto 3000');
+//El puerto sale de la variable de entorno PORT (3000 si no existe).
+//Ojo: tiene que ser || y no |, que es un OR de bits (4000|3000 da 4024)
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+console.log(`Servidor funcionando en el puerto ${PORT}`);
 });
 
 //Gestion de conexiones de jugadores
