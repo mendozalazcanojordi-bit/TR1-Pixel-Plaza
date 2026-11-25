@@ -3,6 +3,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const { Socket } = require('dgram');
 
 //Creo la aplicacion de Express y el servidor HTTP
 //Socket usara este mismmo servidor para gestionar 
@@ -26,6 +27,20 @@ methods: ['GET', 'POST']
 });
 
 //El puerto escuchara puerto 3000
-server.listen(3000, () => {
+server.listen(process.env.PORT|3000, () => {
 console.log('Servidor funcionando en el puerto 3000');
 });
+
+//Gestion de conexiones de jugadores
+//Socket.IO ejecuta la funcion por navegador conectado al server
+io.on('connection', (socket) => {
+    console.log('Jugador conectado: ', socket.id)
+
+    //Detectamos cunado un jugador pierde la conexion
+    socket.on('disconnect', () => {
+        console.log('Jugador desconectado:', socket.id);
+
+        //Avisamos a todos los clientes de quien se ha desconectado
+        io.emit('jugadorDesconectado', socket.id);
+    });
+})
