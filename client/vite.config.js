@@ -17,5 +17,8 @@ export default defineConfig({
     host: true,
     port: 5173,
     strictPort: true,
+    // Dins de Docker a Windows els canvis dels fitxers no arriben com a esdeveniments:
+    // el contenidor posa VITE_POLLING=true i Vite comprova els fitxers cada 300 ms. Fora de Docker no fa res.
+    watch: process.env.VITE_POLLING === 'true' ? { usePolling: true, interval: 300 } : undefined,
   },
 })
