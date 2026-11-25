@@ -1,0 +1,45 @@
+/*
+ * Tema base de CasinoPlaza.
+ * Tots els colors, tipografies i mides surten d'aquí: als components feu servir
+ * sempre les variables, mai valors directes.
+ */
+:root {
+  /* Colors principals */
+  --color-felt: #0f5132; /* tapet verd de les taules */
+  --color-felt-dark: #0a3622;
+  --color-gold: #d4a017; /* accent: fitxes, títols, botó principal */
+  --color-gold-light: #f2c94c;
+  --color-red: #b3261e; /* errors i accions perilloses */
+  --color-red-light: #e5534b;
+
+  /* Fons i superfícies */
+  --color-bg: #0b1410;
+  --color-surface: #13221b;
+  --color-surface-raised: #1b2f25;
+  --color-border: #2c4a3b;
+
+  /* Text */
+  --color-text: #f1efe7;
+  --color-text-muted: #a9b8ae;
+  --color-text-on-gold: #1a1405;
+
+  /* Tipografia */
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-pixel: 'Press Start 2P', monospace; /* només per a títols curts */
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
+
+  /* Espais i formes */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --shadow-card: 0 4px 0 rgba(0, 0, 0, 0.35);
+  --transition-fast: 120ms ease-out;
+}
